@@ -82,9 +82,6 @@ def photo_upload(request):
         form = PhotoForm()
     return render(request, 'photo_upload.html', {'form': form})
 
-# def all_user_pictures(request):
-#     users = UserProfile.objects.all()
-#     return render(request, 'home.html', {'users': users})
 
 def profile(request, username):
     user = User.objects.get(username=username)
@@ -93,17 +90,27 @@ def profile(request, username):
 @login_required
 def profile_edit(request, username):
     if request.user.username != username:
-        return redirect('profile', username=request.user.username)
+        messages.error(request, "You don't have permission to edit this profile.")
+        return redirect('profile', username=username)
     
+    user = request.user
+    profile, created = UserProfile.objects.get_or_create(user=user)
+
     if request.method == 'POST':
-        form = ProfileEditForm(request.POST, instance=request.user)
+        form = ProfileEditForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect('profile', username=username)
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('profile', username=user.username)
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
-        form = ProfileEditForm(instance=request.user)
+        form = ProfileEditForm(instance=profile)
     
-    return render(request, 'profile_edit.html', {'form': form})
+    return render(request, 'profile_edit.html', {
+        'form': form,
+        'user': user
+    })
 
 @login_required
 def like_photo(request, photo_id):
