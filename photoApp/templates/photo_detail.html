@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ photo.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Photo Section -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.title }}">
+                <div class="card-body">
+                    <h2 class="card-title">{{ photo.title }}</h2>
+                    <p class="card-text">{{ photo.description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="btn-group me-3">
+                                {% if user.is_authenticated %}
+                                    <form action="{% url 'like_photo' photo.id %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-primary">
+                                            {% if user in photo.likes.all %}
+                                                <i class="fas fa-heart"></i> {{ photo.likes.count }}
+                                            {% else %}
+                                                <i class="far fa-heart"></i> {{ photo.likes.count }}
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <button class="btn btn-outline-secondary" disabled>
+                                        <i class="far fa-heart"></i> {{ photo.likes.count }}
+                                    </button>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="far fa-comment me-2"></i>
+                                <span>{{ photo.comment_set.count }} comment{{ photo.comment_set.count|pluralize }}</span>
+                            </div>
+                        </div>
+                        <small class="text-muted">Posted {{ photo.upload_date|timesince }} ago by {{ photo.user.username }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Comments ({{ photo.comment_set.count }})</h5>
+                </div>
+                <div class="card-body comments-container">
+                    {% if photo.comment_set.all %}
+                        {% for comment in photo.comment_set.all %}
+                            <div class="comment-item mb-3 pb-2 border-bottom">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1">{{ comment.user.username }}</h6>
+                                    <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                                </div>
+                                <p class="mb-0">{{ comment.content }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center my-3">No comments yet</p>
+                    {% endif %}
+                </div>
+                {% if user.is_authenticated %}
+                    <div class="card-footer bg-light">
+                        <form action="{% url 'comment_photo' photo.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <input type="text" name="content" class="form-control" 
+                                       placeholder="Add a comment..." required>
+                                <button type="submit" class="btn btn-primary">Post</button>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .comments-container {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+    .comment-item:last-child {
+        border-bottom: none !important;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    .btn-outline-primary i, .btn-outline-secondary i {
+        margin-right: 5px;
+    }
+    .btn-group form {
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}

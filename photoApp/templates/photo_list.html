@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}My Gallery{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>My Photo Gallery</h2>
+        </div>
+        <div class="col text-end">
+            <a href="{% url 'photo_upload' %}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Upload New Photo
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if photos %}
+            {% for photo in photos %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="image-container" style="height: 250px; overflow: hidden;">
+                            {% if photo.image %}
+                                <img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.title }}"
+                                     style="width: 100%; height: 100%; object-fit: cover;">
+                            {% endif %}
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-truncate">{{ photo.title }}</h5>
+                            <p class="card-text">{{ photo.description|truncatechars:100 }}</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{% url 'photo_detail' photo.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    {% if user == photo.user %}
+                                        <div class="btn-group">
+                                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'photo_delete' photo.id %}" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center">
+                <p class="lead text-muted">You haven't uploaded any photos yet.</p>
+                <a href="{% url 'photo_upload' %}" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> Upload Your First Photo
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .btn-group .btn {
+        padding: .25rem .5rem;
+    }
+</style>
+{% endblock %}

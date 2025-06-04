@@ -1,0 +1,31 @@
+{% extends 'base.html'%}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ user.username }}'s Profile</h2>
+
+    {% if user.profile.image %}
+        <img src="{{ user.profile.image.url }}" alt="{{ user.username }}'s profile picture" style="width: 150px; height: auto;">
+    {% else %}
+        <p>No profile picture uploaded.</p>
+    {% endif %}
+    
+    <p>Email: {{ user.email }}</p>
+    <p>Joined on: {{ user.date_joined }}</p>
+    <p>Bio: {{ user.profile.bio }}</p>
+
+    {% if user.is_authenticated and user.username == request.user.username %}
+        <form method="post" action="{% url 'profile_edit' user.username %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="image">Change Profile Picture:</label>
+            <input type="file" name="image" id="image">
+            <br>
+            <label for="bio">Update Bio:</label>
+            <textarea name="bio" id="bio">{{ user.profile.bio }}</textarea>
+            <br>
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}

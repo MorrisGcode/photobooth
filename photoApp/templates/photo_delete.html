@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Photo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Delete Photo</h2>
+    <p>Are you sure you want to delete "{{ photo.title }}"?</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+        <a href="{% url 'photo_detail' photo.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
