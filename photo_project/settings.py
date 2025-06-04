@@ -15,6 +15,7 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from cloudinary.utils import cloudinary_url
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +30,7 @@ SECRET_KEY = 'django-insecure-u@5kvy4z%z#&!koqe$mei#clwk+peoixh5hpe!9m!83pr0qw_6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [ '*']
 
 
 # Application definition
@@ -85,17 +86,21 @@ WSGI_APPLICATION = 'photo_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql', 
-        'NAME': 'photos', 
-        'USER': 'morris', 
-        'PASSWORD': '123456', 
-        'HOST': 'localhost', 
-        'PORT': '5432', 
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql', 
+#         'NAME': 'photos', 
+#         'USER': 'morris', 
+#         'PASSWORD': '123456', 
+#         'HOST': 'localhost', 
+#         'PORT': '5432', 
+#     }
+# }
 
+DATABASES = { 
+   # the link here is the external link provided on postgresql web service db 
+   "default": dj_database_url.parse("postgresql://photobooth_zxum_user:IeEHSV0ldIZRLTPjwALYZqHNOl1WV4xV@dpg-d0vu1vali9vc73d8s0rg-a.oregon-postgres.render.com/photobooth_zxum") 
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
